@@ -1,12 +1,13 @@
 require 'json'
 require 'pry'
 require 'net/http'
+require 'stringio'
 
 @zipcode_dump = []
 @buffer = nil
 @state_name = nil
 
-def population_above_ten_million
+def state_population_above_ten_million
 	population = @zipcode_dump.group_by{|zipcode| zipcode["state"]}.map do |state_name, zipcodes|
 		{
 			"_id" => state_name,
@@ -15,17 +16,17 @@ def population_above_ten_million
 	end
 
 	above_ten_million = population.select {|state| state["totalPop"] > 10000000}
-	
+
 	puts above_ten_million
 	above_ten_million
 end
 
-def smallest_and_largest_city_populations
-	min_and_max = cities_with_population.map do |state|
+def min_max_city_populations_per_state
+	min_and_max = city_populations_by_state.map do |state|
 		state_name = state.keys.first
 		biggest_city = state["#{state_name}"].max_by{|city| city["population"] }
 		smallest_city = state["#{state_name}"].min_by{|city| city["population"] }
-		
+
 		{
 			"state" => state_name,
 			"biggestCity" => {
@@ -36,28 +37,32 @@ def smallest_and_largest_city_populations
 				"name"=> smallest_city["city"],
 				"pop"=> smallest_city["population"]
 			}
-		}		
+		}
 	end
-
-	puts min_and_max
-	min_and_max
+	filtered_result = min_and_max.find {|state| state['state'] == @state_name }
+	puts filtered_result
+	filtered_result
 end
 
-def average_city_population
-	average_population = cities_with_population.map do |state|
+def average_city_population_per_state
+	average_population = city_populations_by_state.map do |state|
 		state_name = state.keys.first
-		average_city_population = state["#{state_name}"].map {|city| city['population']}.reduce(:+) / state["#{state_name}"].size
 		{
 			"_id" => state_name,
-			"avgCityPop" => average_city_population
+			"avgCityPop" => average_city_population(state, state_name)
 		}
 	end
 
-	puts average_population
-	average_population
+	filtered_result = average_population.find {|state| state['_id'] == @state_name }
+	puts filtered_result
+	filtered_result
 end
 
-def cities_with_population
+def average_city_population(state, state_name)
+	state["#{state_name}"].map {|city| city['population']}.reduce(:+) / state["#{state_name}"].size
+end
+
+def city_populations_by_state
 	@zipcode_dump.group_by{|zipcode| zipcode["state"]}.map do |state_name, zip_values|
 		{
 			"#{state_name}" => zip_values.group_by{|city| city["city"]}.map do |city, city_populations|
@@ -74,19 +79,19 @@ def prompt_the_user
 		2. Return average city population by state
 		3. Return largest and smallest cities by state
 
-		Choose a feature by entering it's number:"
+		Choose a feature by entering it's number: "
 
 	feature_number = $stdin.gets.chomp
-	
+
 	case feature_number
 	when "1"
-	 	population_above_ten_million
+	 	state_population_above_ten_million
 	when "2"
 		select_state
-	 	average_city_population
+	 	average_city_population_per_state
 	when "3"
 		select_state
-	 	smallest_and_largest_city_populations
+	 	min_max_city_populations_per_state
 	else
 	 	puts "Sorry, your input was invalid. Please enter 1, 2, or 3"
 	 	prompt_the_user
@@ -95,7 +100,7 @@ end
 
 def state_name_validation
 	list_of_state_names = @zipcode_dump.group_by{|zipcode| zipcode["state"]}.keys
-	
+
 	unless list_of_state_names.include?(@state_name)
 		puts "Sorry, your input was invalid. Please enter the abbreviated name of a state like NY"
 		select_state
