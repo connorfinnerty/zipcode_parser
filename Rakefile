@@ -1,13 +1,14 @@
-# This Rakefile has all the right settings to run the tests inside each dir
 gem 'rspec'
 require 'rspec/core/rake_task'
+require 'rubocop/rake_task'
+task default: :spec
 
-task :default => :spec
+desc 'use rake to run tests'
+RSpec::Core::RakeTask.new(:spec) do |t|
+  t.pattern = 'zipcode_parser_spec.rb'
+end
 
-desc "use rake to run tests"
-RSpec::Core::RakeTask.new do |task|
-  dir = Rake.application.original_dir
-  task.pattern = "#{dir}/*_spec.rb"
-  task.rspec_opts = [ "-I#{dir}", "-I#{dir}/solution", '-f documentation', '-r ./rspec_config']
-  task.verbose = false
+desc 'use rake to run rubocop'
+RuboCop::RakeTask.new(:rubocop) do |t|
+  t.options = ['--display-cop-names']
 end

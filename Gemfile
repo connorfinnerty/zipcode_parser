@@ -1,6 +1,8 @@
-source "https://rubygems.org"
+source 'https://rubygems.org'
 
-gem "rake"
-gem "rspec"
 gem 'json'
 gem 'pry'
+gem 'rake'
+gem 'rake-rspec'
+gem 'rspec'
+gem 'rubocop'
