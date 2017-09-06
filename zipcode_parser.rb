@@ -7,6 +7,12 @@ require 'stringio'
 @buffer = nil
 @state_name = nil
 
+# Helper method for printing and then returning
+def print_and_return(result)
+  puts result
+  result
+end
+
 def state_population_above_ten_million
   population = @zipcode_dump.group_by { |zipcode| zipcode["state"] }.map do |state_name, zipcodes|
     {
@@ -16,9 +22,7 @@ def state_population_above_ten_million
   end
 
   above_ten_million = population.select { |state| state["totalPop"] > 10000000 }
-
-  puts above_ten_million
-  above_ten_million
+  print_and_return(above_ten_million)
 end
 
 def min_max_city_populations_per_state
@@ -40,8 +44,7 @@ def min_max_city_populations_per_state
     }
   end
   filtered_result = min_and_max.find { |state| state['state'] == @state_name }
-  puts filtered_result
-  filtered_result
+  print_and_return(filtered_result)
 end
 
 def average_city_population_per_state
@@ -54,8 +57,7 @@ def average_city_population_per_state
   end
 
   filtered_result = average_population.find { |state| state['_id'] == @state_name }
-  puts filtered_result
-  filtered_result
+  print_and_return(filtered_result)
 end
 
 def average_city_population(state, state_name)
@@ -118,9 +120,9 @@ def select_state
 end
 
 def zipcode_dump
-  @zipcode_dump ||= fetch_and_parse_zipcode_dump
+  # @zipcode_dump ||= fetch_and_parse_zipcode_dump
   # For faster testing, we can use previously downloaded data:
-  # @zipcode_dump ||= JSON.parse(File.read("zips.json"))
+  @zipcode_dump ||= JSON.parse(File.read("zips.json"))
 end
 
 def fetch_and_parse_zipcode_dump
