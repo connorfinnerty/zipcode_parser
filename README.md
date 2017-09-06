@@ -15,7 +15,7 @@ This will start a server on the default local port, 4567.
 
 
 ## Using the API
-
+![](https://i.imgur.com/jQkt4qO.png)
 The following examples illustrate how to interact with the ZCPR API using curl on the command line:
 
 ```
