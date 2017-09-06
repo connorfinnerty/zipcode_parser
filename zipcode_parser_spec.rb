@@ -21,7 +21,7 @@ describe "The zipcode parser" do
     expect(average_city_population).to be 5372
     expect(@mn_data["MN"].size).to be 814
 
-
+    expect(state_name_validation(proc { average_city_population })).to include "{'_id'=>'MN', 'avgCityPop'=>5372}"
   end
 
   it "returns the smallest and largest cities per state" do
