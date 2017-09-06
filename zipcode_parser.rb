@@ -115,6 +115,17 @@ def select_state
 	state_name_validation
 end
 
+def zipcode_dump
+  @zipcode_dump ||= fetch_and_parse_zipcode_dump
+  # For faster testing, we can use previously downloaded data:
+  # @zipcode_dump ||= JSON.parse(File.read("zips.json"))
+end
+
+def fetch_and_parse_zipcode_dump
+  @buffer ||= fetch_data("http://media.mongodb.org/zips.json")
+  parse_data(@buffer)
+end
+
 def fetch_data(url)
 	response = Net::HTTP.get_response(URI.parse(url))
 	@buffer = response.body
@@ -127,6 +138,5 @@ def parse_data(buffer)
 	end
 end
 
-fetch_data("http://media.mongodb.org/zips.json")
-parse_data(@buffer)
+fetch_and_parse_zipcode_dump
 prompt_the_user
