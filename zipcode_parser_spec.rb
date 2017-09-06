@@ -13,7 +13,8 @@ describe "The zipcode parser" do
   end
 
   it "returns the states with a population over ten million function" do
-    expect(state_population_above_ten_million).to include ({"_id"=>"NY", "totalPop"=>17990402})
+    new_york_population = '17990402'
+    expect(state_populations_above_ten_million).to include new_york_population
   end
 
   it "returns the average city population by state" do
