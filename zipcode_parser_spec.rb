@@ -1,5 +1,5 @@
 require 'stringio'
-require "zipcode_parser.rb"
+require File.dirname(__FILE__) + '/zipcode_parser.rb'
 
 describe "The zipcode parser" do
   	before do
