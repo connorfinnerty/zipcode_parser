@@ -99,12 +99,14 @@ def prompt_the_user
 end
 
 def state_name_validation
-	list_of_state_names = @zipcode_dump.group_by{|zipcode| zipcode["state"]}.keys
-
-	unless list_of_state_names.include?(@state_name)
+	unless state_names_list.include?(@state_name)
 		puts "Sorry, your input was invalid. Please enter the abbreviated name of a state like NY"
 		select_state
 	end
+end
+
+def state_names_list
+  %w[MA RI NH ME VT CT NY NJ PA DE DC MD VA WV NC SC GA FL AL TN MS KY OH IN MI IA WI MN SD ND MT IL MO KS NE LA AR OK TX CO WY ID UT AZ NM NV CA HI OR WA AK]
 end
 
 def select_state
