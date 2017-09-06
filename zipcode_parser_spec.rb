@@ -1,10 +1,10 @@
-require 'stringio'
 require File.dirname(__FILE__) + '/zipcode_parser.rb'
 
 describe "The zipcode parser" do
+  include Rack::Test::Methods
+
   before do
     @zipcode_dump = JSON.parse(File.read("zips.json"))
-    @mn_data = eval(File.read("mn_data.rb"))
     @state_name = "MN"
   end
 
@@ -20,9 +20,8 @@ describe "The zipcode parser" do
   it "returns the average city population by state" do
     # The given example output for MN seemed wrong, so I manually confirmed that my math was correct
     expect(average_city_population).to be 5372
-    expect(@mn_data["MN"].size).to be 814
 
-    expect(state_name_validation(proc { average_city_population })).to include "{'_id'=>'MN', 'avgCityPop'=>5372}"
+    expect(state_name_validator(proc { average_city_population })).to include "{'_id'=>'MN', 'avgCityPop'=>5372}"
   end
 
   it "returns the smallest and largest cities per state" do

@@ -1,7 +1,7 @@
+require 'sinatra'
 require 'json'
 require 'pry'
 require 'net/http'
-require 'stringio'
 
 @buffer = nil
 @state_name = nil
@@ -38,7 +38,7 @@ def print_and_return(result)
 end
 
 # Checks state name parameter against a list of state names
-def state_name_validation(function)
+def state_name_validator(function)
   if state_names_list.include?(@state_name)
     new_string = function.call
     "{'_id'=>" + "'#{@state_name}'" + ", 'avgCityPop'=>" + new_string.to_s + "}"
@@ -116,10 +116,10 @@ def prompt_the_user
     state_populations_above_ten_million
   when "2"
     select_state
-    state_name_validation(proc { average_city_population })
+    state_name_validator(proc { average_city_population })
   when "3"
     select_state
-    state_name_validation(proc { min_and_max_city_populations })
+    state_name_validator(proc { min_and_max_city_populations })
   else
     puts "Sorry, your input was invalid. Please enter 1, 2, or 3"
     prompt_the_user
@@ -131,5 +131,6 @@ def select_state
   @state_name = $stdin.gets.chomp
 end
 
+# Methods required for command line mode
 # fetch_and_parse_zipcode_dump
-prompt_the_user
+# prompt_the_user
