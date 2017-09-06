@@ -2,32 +2,34 @@ require 'stringio'
 require File.dirname(__FILE__) + '/zipcode_parser.rb'
 
 describe "The zipcode parser" do
-  	before do
-			@zipcode_dump = JSON.parse(File.read("zips.json"))
-			@mn_data = eval(File.read("mn_data.rb"))
-			@state_name = "MN"
-  	end
+  before do
+    @zipcode_dump = JSON.parse(File.read("zips.json"))
+    @mn_data = eval(File.read("mn_data.rb"))
+    @state_name = "MN"
+  end
 
-	  after do
-	    $stdin = STDIN
-	  end
+  after do
+    $stdin = STDIN
+  end
 
-	it "returns the states with a population over ten million function" do
-		expect(state_population_above_ten_million).to include ({"_id"=>"NY", "totalPop"=>17990402})
-	end
+  it "returns the states with a population over ten million function" do
+    expect(state_population_above_ten_million).to include ({"_id"=>"NY", "totalPop"=>17990402})
+  end
 
-	it "returns the average city population by state" do
-		# The given example output for MN seemed wrong, so I manually confirmed that my math was correct
-		expect(average_city_population(@mn_data, "MN")).to be 5372
-		expect(@mn_data["MN"].size).to be 814
+  it "returns the average city population by state" do
+    # The given example output for MN seemed wrong, so I manually confirmed that my math was correct
+    expect(average_city_population(@mn_data, "MN")).to be 5372
+    expect(@mn_data["MN"].size).to be 814
 
-		expect(average_city_population_per_state).to include ({"_id"=>"MN", "avgCityPop"=>5372})
-	end
+    expect(average_city_population_per_state).to include ({"_id"=>"MN", "avgCityPop"=>5372})
+  end
 
-	it "returns the smallest and largest cities per state" do
-		expect(min_max_city_populations_per_state).to include
-			{"state"=>"MN",
-			"biggestCity"=>{"name"=>"MINNEAPOLIS", "pop"=>344719},
-			"smallestCity"=>{"name"=>"JOHNSON", "pop"=>12}}
-	end
+  it "returns the smallest and largest cities per state" do
+    expect(min_max_city_populations_per_state).to include
+    {
+      "state"=>"MN",
+      "biggestCity"=>{"name"=>"MINNEAPOLIS", "pop"=>344719},
+      "smallestCity"=>{"name"=>"JOHNSON", "pop"=>12}
+    }
+  end
 end
