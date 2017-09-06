@@ -18,14 +18,14 @@ describe "The zipcode parser" do
 
   it "returns the average city population by state" do
     # The given example output for MN seemed wrong, so I manually confirmed that my math was correct
-    expect(average_city_population(@mn_data, "MN")).to be 5372
+    expect(average_city_population).to be 5372
     expect(@mn_data["MN"].size).to be 814
 
-    expect(average_city_population_per_state).to include ({"_id"=>"MN", "avgCityPop"=>5372})
+
   end
 
   it "returns the smallest and largest cities per state" do
-    expect(min_max_city_populations_per_state).to include
+    expect(min_and_max_city_populations).to include
     {
       "state"=>"MN",
       "biggestCity"=>{"name"=>"MINNEAPOLIS", "pop"=>344719},
