@@ -5,7 +5,7 @@ task default: :spec
 
 desc 'use rake to run tests'
 RSpec::Core::RakeTask.new(:spec) do |t|
-  t.pattern = 'zipcode_parser_spec.rb, zcpr_server_spec.rb'
+  t.pattern = 'zipcode_parser_spec.rb'
 end
 
 desc 'use rake to run rubocop'
