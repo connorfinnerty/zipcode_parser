@@ -18,18 +18,28 @@ get '/' do
 end
 
 get '/state-populations-above-ten-million' do
-  state_populations_above_ten_million
+  state_populations_above_ten_million.to_json
 end
 
 # We're passing a method to state_name_validator by using a proc, to consolidate code
 get '/average-city-population/:state_name' do
   @state_name = params[:state_name]
-  state_name_validator(proc { average_city_population })
+  if state_name_validator
+    average_city_population.to_json
+  else
+    'Sorry, your input was invalid. Please enter the abbreviated name
+of a state like NY\n'
+  end
 end
 
 get '/min-and-max-city-populations/:state_name' do
   @state_name = params[:state_name]
-  state_name_validator(proc { min_and_max_city_populations })
+  if state_name_validator
+    min_and_max_city_populations.to_json
+  else
+    'Sorry, your input was invalid. Please enter the abbreviated name
+of a state like NY\n'
+  end
 end
 
 def zipcode_dump
@@ -59,20 +69,15 @@ end
 
 # Helper method for printing and then returning
 def print_and_return(result)
-  puts result
+  puts result.to_s
   result
 end
 
-# Checks state name parameter against a list of state names
-def state_name_validator(function)
-  if state_names_list.include?(@state_name)
-    new_string = function.call
-    "{'_id'=>" + "'#{@state_name}'" + ", 'avgCityPop'=>" + new_string.to_s + "}"
-  else
-    'Sorry, your input was invalid. Please enter the abbreviated name of a state like NY\n'
-  end
+def state_name_validator
+  state_names_list.include?(@state_name)
 end
 
+# Checks user's state name input against a list of valid state names
 def state_names_list
   %w[MA RI NH ME VT CT NY NJ PA DE DC MD VA WV NC SC GA FL AL TN MS KY OH IN MI IA WI MN SD ND MT IL MO KS NE LA AR OK TX CO WY ID UT AZ NM NV CA HI OR WA AK]
 end
@@ -98,17 +103,16 @@ def state_populations_above_ten_million
       "totalPop" => zipcodes.map { |zipcode| zipcode["pop"] }.reduce(:+)
     }
   end
-  # Filters the list of states and populations to those with a population over ten million
-  filtered_result = states_and_populations.select { |state| state["totalPop"] > 10000000 }.to_s
-  print_and_return(filtered_result.to_s)
+
+  filtered_result = states_and_populations.select { |state| state["totalPop"] > 10000000 }
+  print_and_return(filtered_result)
 end
 
 def min_and_max_city_populations
   # Takes the list of a state's cities and populations and finds the cities with smallest and largest populations
   biggest_city = cities_and_populations[@state_name].max_by { |city| city["population"] }
   smallest_city = cities_and_populations[@state_name].min_by { |city| city["population"] }
-
-  {
+  filtered_result = {
     "state" => @state_name,
     "biggestCity" => {
       "name"=> biggest_city["city"],
@@ -119,12 +123,17 @@ def min_and_max_city_populations
       "pop"=> smallest_city["population"]
     }
   }
+  print_and_return(filtered_result)
 end
 
 # Takes a sum of a state's city's populations using reduce, and divides by the number of cities in that state
 def average_city_population
-  result = cities_and_populations[@state_name].map { |city| city['population'] }.reduce(:+) / cities_and_populations[@state_name].size
-  print_and_return(result)
+  population = cities_and_populations[@state_name].map { |city| city['population'] }.reduce(:+) / cities_and_populations[@state_name].size
+  filtered_result = {
+    "_id" => @state_name,
+    "avgCityPop" => population
+  }
+  print_and_return(filtered_result)
 end
 
 def prompt_the_user
